@@ -1,164 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>DME Calculator</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #e0f7fa, #f1f8e9);
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+<meta charset="utf-8"/>
+<title>DME Calculator</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #e0f7fa, #f1f8e9);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-    h2 {
-      color: #00695c;
-    }
+  h2 {
+    color: #00695c;
+  }
 
-    .container {
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 800px;
-    }
+  .container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 800px;
+  }
 
-    .input-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
+  .input-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
 
-    .input-group input {
-      flex: 1 1 150px;
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-    }
+  .input-group input {
+    flex: 1 1 150px;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+  }
 
-    .claim-entry {
-      margin-bottom: 10px;
-    }
+  button {
+    background-color: #00796b;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+  }
 
-    button {
-      background-color: #00796b;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      margin-top: 10px;
-    }
+  button:hover {
+    background-color: #004d40;
+  }
 
-    button:hover {
-      background-color: #004d40;
-    }
+  #output {
+    white-space: pre-wrap;
+    background: #f9fbe7;
+    height: calc(1.5em * 5);
+    word-wrap: break-word;
+    overflow-wrap: break-word
+    padding: 15px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-family: monospace;
+    font-size: 14px; 
+    gap: 20px;
+  }
 
-    #output {
-      white-space: pre-wrap;
-      background: #f9fbe7;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
-      font-family: monospace;
-      font-size: 14px;
-    }
-  </style>
+  .bulk-inputs {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .bulk-inputs textarea {
+    width: 93%;
+    min-width: 300px;
+    flex: 1;
+    resize: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>DME Calculator</h2>
-    <div class="input-group">
-      <input type="text" id="cpt1" placeholder="CPT Code 1">
-      <input type="number" id="purchase1" placeholder="Purchase Amount 1">
-      <input type="number" id="rental1" placeholder="Rental Amount 1">
-    </div>
-    <div class="input-group">
-      <input type="text" id="cpt2" placeholder="CPT Code 2">
-      <input type="number" id="purchase2" placeholder="Purchase Amount 2">
-      <input type="number" id="rental2" placeholder="Rental Amount 2">
-    </div>
-    <div id="claims"></div>
-    <button onclick="addClaim()">Add Claim</button>
-    <button onclick="generateText()">Generate Text</button>
-    <button onclick="copyText()">Copy to Clipboard</button>
-    <div id="output"></div>
+<div class="container">
+  <h2>DME Calculator</h2>
+  <div class="input-group">
+    <input id="cpt1" placeholder="CPT Code 1" type="text"/>
+    <input id="purchase1" placeholder="Purchase Amount 1" type="number"/>
+    <input id="rental1" placeholder="Rental Amount 1" type="number"/>
   </div>
+  <div class="input-group">
+    <input id="cpt2" placeholder="CPT Code 2" type="text"/>
+    <input id="purchase2" placeholder="Purchase Amount 2" type="number"/>
+    <input id="rental2" placeholder="Rental Amount 2" type="number"/>
+  </div>
+  <div class="bulk-inputs">
+    <div style="flex: 1;">
+      <p>Paste DCNs here:</p>
+      <textarea id="bulkDCNs" placeholder="DCNs" rows="3"></textarea>
+    </div>
+    <div style="flex: 1;">
+      <p>Paste DOS here:</p>
+      <textarea id="bulkDOS" placeholder="DOS" rows="3"></textarea>
+    </div>
+  </div>
+  <button onclick="generateText()">Generate Free Flow Text</button>
+  <button onclick="copyText()">Copy to Clipboard</button>
+  <div id="output"</div>
+</div>
 
-  <script>
-    let claimCount = 0;
-    function addClaim() {
-      if (claimCount >= 10) return;
-      const div = document.createElement('div');
-      div.className = 'claim-entry';
-      div.innerHTML = `
-        <div class="input-group">
-          <input type="text" placeholder="DCN" class="dcn">
-          <input type="text" placeholder="Dates of Service" class="dos">
-        </div>
-      `;
-      document.getElementById('claims').appendChild(div);
-      claimCount++;
-    }
+<script>
+function formatDate(dateStr) {
+  const parts = dateStr.trim().split('/');
+  if (parts.length !== 3) return '';
+  return parts[0].padStart(2, '0') + parts[1].padStart(2, '0') + parts[2].slice(-2);
+}
 
-    function formatDate(dateStr) {
-            const parts = dateStr.trim().split('/');
-            if (parts.length !== 3) return '';
-            return parts[0].padStart(2, '0') + parts[1].padStart(2, '0') + parts[2].slice(-2);
-    }
+function generateText() {
+  const cpt1 = document.getElementById('cpt1').value;
+  const purchase1 = parseFloat(document.getElementById('purchase1').value) || 0;
+  const rental1 = parseFloat(document.getElementById('rental1').value) || 0;
+  const cpt2 = document.getElementById('cpt2').value;
+  const purchase2 = parseFloat(document.getElementById('purchase2').value) || 0;
+  const rental2 = parseFloat(document.getElementById('rental2').value) || 0;
 
-    function generateText() {
-      const cpt1 = document.getElementById('cpt1').value;
-      const purchase1 = parseFloat(document.getElementById('purchase1').value) || 0;
-      const rental1 = parseFloat(document.getElementById('rental1').value) || 0;
-      const cpt2 = document.getElementById('cpt2').value;
-      const purchase2 = parseFloat(document.getElementById('purchase2').value) || 0;
-      const rental2 = parseFloat(document.getElementById('rental2').value) || 0;
+  const dcns = document.getElementById('bulkDCNs').value.trim().split('\n').map(d => d.trim()).filter(Boolean);
+  const dosLines = document.getElementById('bulkDOS').value.trim().split('\n').map(d => d.trim()).filter(Boolean);
 
-      const dcns = [];
-      const allDates = [];
+  if (dcns.length !== dosLines.length) {
+    alert("The number of DCNs and DOS entries must match.");
+    return;
+  }
 
-      const claimDivs = document.querySelectorAll('.claim-entry');
-      claimDivs.forEach(div => {
-        const dcn = div.querySelector('.dcn').value;
-        const dos = div.querySelector('.dos').value.split(',');
-        dcns.push(dcn);
-        dos.forEach(date => {
-          if (date.trim()) {
-            allDates.push(formatDate(date));
-          }
-        });
-      });
+  const allDates = [];
+  dosLines.forEach(line => {
+    line.split(',').forEach(date => {
+      if (date.trim()) {
+        allDates.push(formatDate(date));
+      }
+    });
+  });
 
-      const ptd1 = rental1 * allDates.length;
-      const rem1 = purchase1 - ptd1;
-      const ptd2 = rental2 * allDates.length;
-      const rem2 = purchase2 - ptd2;
+  const ptd1 = rental1 * allDates.length;
+  const rem1 = purchase1 - ptd1;
+  const ptd2 = rental2 * allDates.length;
+  const rem2 = purchase2 - ptd2;
 
-      let output = `${cpt1}|NU: $${purchase1.toFixed(2)}|RR: $${rental1.toFixed(2)}|PTD:$${ptd1.toFixed(2)}|REM: $${rem1.toFixed(2)}
-`;
-      output += `${cpt2}|NU: $${purchase2.toFixed(2)}|RR: $${rental2.toFixed(2)}|PTD:$${ptd2.toFixed(2)}|REM: $${rem2.toFixed(2)}
-`;
-      output += `DOS: ${allDates.join('|')}
-`;
-      output += `DCN: ${dcns.join('|')}`;
+  let output = `${cpt1}|NU: $${purchase1.toFixed(2)}|RR: $${rental1.toFixed(2)}|PTD:$${ptd1.toFixed(2)}|REM: $${rem1.toFixed(2)}\n`;
+  output += `${cpt2}|NU: $${purchase2.toFixed(2)}|RR: $${rental2.toFixed(2)}|PTD:$${ptd2.toFixed(2)}|REM: $${rem2.toFixed(2)}\n`;
+  output += `DOS: ${allDates.join('|')}\n`;
+  output += `DCN: ${dcns.join('|')}`;
 
-      document.getElementById('output').textContent = output;
-    }
+  document.getElementById('output').textContent = output;
+}
 
-    function copyText() {
-      const text = document.getElementById('output').textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Text copied to clipboard!');
-      });
-    }
-  </script>
+function copyText() {
+  const text = document.getElementById('output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Text copied to clipboard!');
+  });
+}
+</script>
 </body>
 </html>
